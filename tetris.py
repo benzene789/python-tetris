@@ -1,6 +1,9 @@
 import pygame
 import random
 
+rows = 10
+columns = 24
+
 OBlock = ['.....',
           '.....',
           '.BB..',
@@ -114,4 +117,47 @@ class TetrisBlock:
 
 # get the next shape
 def get_random_shape():
-      return TetrisBlock(6,0,random.choice(all_shapes))
+      return TetrisBlock(5,0,random.choice(all_shapes))
+
+# return the initial board
+def create_board():
+      board=[] 
+      for cols in range(columns): 
+            col = [] 
+            for row in range(rows): 
+                  col.append('.') 
+            board.append(col) 
+      print(board) 
+      return board
+
+# move the shape left
+def move_left(shape):
+      if valid_move(shape, "left"):
+            shape.x -= 1
+      return shape
+
+# move the shape right
+def move_right(shape):
+      if valid_move(shape, "right"):
+            shape.x += 1
+      return shape
+
+# sees if the move is valid
+def valid_move(shape, direction):
+      valid = False
+      if direction == "left" and shape.x > 0:
+            valid = True
+      elif direction == "right" and shape.x < rows:
+            valid = True
+      return valid
+
+if __name__ == "__main__":
+      game_running = True
+      # set up board and get the initial shape
+      first_shape = get_random_shape()
+      board = create_board()
+      
+      # main game loop
+      # while game_running:
+
+
