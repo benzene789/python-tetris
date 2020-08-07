@@ -4,116 +4,35 @@ import random
 rows = 10
 columns = 24
 
-OBlock = ['.....',
-          '.....',
-          '.BB..',
-          '.BB..',
-          '.....']
+OBlock = [["B","B"],
+          ["B","B"]]
+          
+IBlock1 = [["B","B","B","B"]]
 
-IBlock = [['..B..',
-           '..B..',
-           '..B..',
-           '..B..',
-           '.....'],
-           ['.....',
-            'BBBB.',
-            '.....',
-            '.....',
-            '.....']
-          ]
+JBlock = [["B",".",".","."],
+          ["B","B","B","B"]]
 
-SBlock = [['.....',
-          '.....',
-          '..BB.',
-          '.BB..',
-          '.....'],
-          ['.....',
-          '..B..',
-          '..BB.',
-          '...B.']]
+LBlock = [[".",".",".","B"],
+          ["B","B","B","B"]]
 
-ZBlock = [['.....',
-           '.....',
-           '.BB..',
-           '..BB.',
-           '.....'],
-          ['.....',
-           '..B..',
-           '.BB..',
-           '.B...',
-           '.....']]
+SBlock = [[".","B","B"],
+          ["B","B","."]]
 
-JBlock = [['.....',
-           '.B...',
-           '.BBB.',
-           '.....',
-           '.....'],
-          ['.....',
-           '..BB.',
-           '..B..',
-           '..B..',
-           '.....'],
-          ['.....',
-           '.....',
-           '.BBB.',
-           '...B.',
-           '.....'],
-          ['.....',
-           '..B..',
-           '..B..',
-           '.BB..',
-           '.....']]
- 
-LBlock = [['.....',
-           '...B.',
-           '.BBB.',
-           '.....',
-           '.....'],
-          ['.....',
-           '..B..',
-           '..B..',
-           '..BB.',
-           '.....'],
-          ['.....',
-           '.....',
-           '.BBB.',
-           '.B...',
-           '.....'],
-          ['.....',
-           '.BB..',
-           '..B..',
-           '..B..',
-           '.....']]
- 
-TBlock = [['.....',
-           '..B..',
-           '.BBB.',
-           '.....',
-           '.....'],
-          ['.....',
-           '..B..',
-           '..BB.',
-           '..B..',
-           '.....'],
-          ['.....',
-           '.....',
-           '.BBB.',
-           '..B..',
-           '.....'],
-          ['.....',
-           '..B..',
-           '.BB..',
-           '..B..',
-           '.....']]
+ZBlock = [["B","B","."],
+          [".","B","B"]]
 
-all_shapes = [OBlock, IBlock, ZBlock, SBlock, JBlock, LBlock, TBlock]
+TBlock = [[".","B","."],
+          ["B","B","B"]]
+
+all_shapes = [OBlock, IBlock1, ZBlock, SBlock, JBlock, LBlock, TBlock]
 
 class TetrisBlock:
       def __init__(self, x, y, shape):
             self.x = x
             self.y = y
             self.shape = shape
-            self.rotation = 0
+            self.height = len(shape)
+            self.width = len(shape[0])
 
 # get the next shape
 def get_random_shape():
@@ -127,7 +46,6 @@ def create_board():
             for row in range(rows): 
                   col.append('.') 
             board.append(col) 
-      print(board) 
       return board
 
 # move the shape left
@@ -151,12 +69,27 @@ def valid_move(shape, direction):
             valid = True
       return valid
 
+def rotate_shape(shape_matrix, x, y):
+      rotation = []
+      # iterate through the width of the matrix
+      for row in range(len(shape_matrix[0])):
+            new_row = []
+            # iterate through the height of the matrix  
+            for column in range(len(shape_matrix)-1,-1,-1):
+                  # create a new row
+                  new_row.append(shape_matrix[column][row])
+            # add each new row to the new rotation
+            rotation.append(new_row)
+      # return a new Tetrisblock object
+      return TetrisBlock(x,y,rotation)
+
 if __name__ == "__main__":
       game_running = True
       # set up board and get the initial shape
       first_shape = get_random_shape()
+      print(first_shape.shape)
       board = create_board()
-      
+      print(rotate_shape(first_shape.shape, first_shape.x, first_shape.y).shape)
       # main game loop
       # while game_running:
 
