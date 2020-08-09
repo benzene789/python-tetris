@@ -1,8 +1,10 @@
 import pygame
 import random
 
-rows = 10
-columns = 24
+ROWS = 10
+COLUMNS = 24
+WIDTH = 500
+HEIGHT = 500
 
 OBlock = [["B","B"],
           ["B","B"]]
@@ -39,13 +41,15 @@ def get_random_shape():
       return TetrisBlock(5,0,random.choice(all_shapes))
 
 # return the initial board
-def create_board():
+def create_board(display):
       board=[] 
-      for cols in range(columns): 
+      for cols in range(COLUMNS): 
             col = [] 
-            for row in range(rows): 
-                  col.append('.') 
-            board.append(col) 
+            for row in range(ROWS): 
+                  col.append('.')
+                  pygame.draw.rect(display, pygame.Color("#000000"), (WIDTH/2+row,0+cols,WIDTH/10,HEIGHT/10))
+            #pygame.draw.rect(display, pygame.Color('#000000'), (70+cols,20+row,10,10))
+            board.append(col)
       return board
 
 # move the shape left
@@ -69,28 +73,49 @@ def valid_move(shape, direction):
             valid = True
       return valid
 
-def rotate_shape(shape_matrix, x, y):
+def rotate_shape(block):
       rotation = []
       # iterate through the width of the matrix
-      for row in range(len(shape_matrix[0])):
+      for row in range(block.width):
             new_row = []
             # iterate through the height of the matrix  
-            for column in range(len(shape_matrix)-1,-1,-1):
+            for column in range(len(block.shape)-1,-1,-1):
                   # create a new row
-                  new_row.append(shape_matrix[column][row])
+                  new_row.append(block.shape[column][row])
             # add each new row to the new rotation
             rotation.append(new_row)
       # return a new Tetrisblock object
-      return TetrisBlock(x,y,rotation)
+      return TetrisBlock(block.x,block.y,rotation)
 
 if __name__ == "__main__":
-      game_running = True
+      pygame.init()
+      
+      WINDOW_SIZE = (WIDTH,HEIGHT)
+      display = pygame.display.set_mode(WINDOW_SIZE)
+      display.fill((255,255,255))
+
+      running = True
+      while running:
+            for event in pygame.event.get():
+                  # Deal with events here
+                  if running:
+                        # Draw/blit onto the display surface
+                        pygame.display.update()
+                        create_board(display)
+      pygame.quit()
+
+      
+
+      '''game_running = True
       # set up board and get the initial shape
       first_shape = get_random_shape()
       print(first_shape.shape)
       board = create_board()
-      print(rotate_shape(first_shape.shape, first_shape.x, first_shape.y).shape)
+      print(board)
+      a = rotate_shape(first_shape)
+      print(a.shape)
+      print(rotate_shape(a).shape)
       # main game loop
-      # while game_running:
+      # while game_running:'''
 
 
