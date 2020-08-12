@@ -59,14 +59,20 @@ def create_board(display):
 def move_left(shape, board, display):
       if shape.x > 0 and board[shape.y][shape.x -1] == ".":
             # erase the shape from the board
-            # remove_shape(board, display)
+            old_board = remove_shape(board, display, shape)
+            new_board = draw_shape(old_board, display, shape)
+
             shape.x -= 1
+      return new_board
 
 def move_right(shape, board, display):
       if shape.x < (COLUMNS - shape.width) and board[shape.y][shape.x +1] == ".":
             # erase shape from board
-            # remove_shape(board, display)
+            old_board = remove_shape(board, display, shape)
+            new_board = draw_shape(old_board, display, shape)
+
             shape.x += 1
+      return new_board
 
 def remove_shape(board, display, shape):
       for col in range(shape.height):
@@ -74,15 +80,26 @@ def remove_shape(board, display, shape):
                   if shape.block[col][row] == "B":
                         board[shape.y + col][shape.x + row] = "."
                         pygame.draw.rect(display, pygame.Color("#000000"), shape.x+row, shape.y+col)
+      return board
 
 def draw_shape(board, display, shape):
       for col in range(shape.height):
             for row in range(shape.width):
                   if shape.block[col][row] == "B":
-                        board[shape.y + col][shape.x + row] = shape.colour
+                        board[shape.y + col][shape.x + row] = "B"
                         colour = colours[shape.colour]
                         pygame.draw.rect(display, pygame.Color(colour), shape.x+row, shape.y+col)
+      return board
 
+# return if there will be a collision between 2 blocks
+def check_collision(board, shape):
+      can_move = True
+      for row in range(shape.width):
+            # check for a 1 below the current position of the shape
+            if board[shape.y + shape.height][shape.x + row] == "B":
+                  # cannot move
+                  can_move = False
+      return can_move
 
 
 def rotate_shape(block):
