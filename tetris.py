@@ -28,13 +28,16 @@ TBlock = [[".","B","."],
 
 all_shapes = [OBlock, IBlock1, ZBlock, SBlock, JBlock, LBlock, TBlock]
 
+colours = ["red", "blue", "green", "pink", "orange", "purple", "yellow"]
+
 class TetrisBlock:
       def __init__(self, x, y, shape):
             self.x = x
             self.y = y
-            self.shape = shape
+            self.block = shape
             self.height = len(shape)
             self.width = len(shape[0])
+            self.colour = random.randint(0, 6)
 
 # get the next shape
 def get_random_shape():
@@ -47,31 +50,40 @@ def create_board(display):
             col = [] 
             for row in range(ROWS): 
                   col.append('.')
-                  pygame.draw.rect(display, pygame.Color("#000000"), (WIDTH/2+row,0+cols,WIDTH/10,HEIGHT/10))
+                  pygame.draw.rect(display, pygame.Color("#000000"), ((WIDTH/2+row)-50,0+cols,WIDTH/10,HEIGHT/10))
             #pygame.draw.rect(display, pygame.Color('#000000'), (70+cols,20+row,10,10))
             board.append(col)
       return board
 
 # move the shape left
-def move_left(shape):
-      if valid_move(shape, "left"):
+def move_left(shape, board, display):
+      if shape.x > 0 and board[shape.y][shape.x -1] == ".":
+            # erase the shape from the board
+            # remove_shape(board, display)
             shape.x -= 1
-      return shape
 
-# move the shape right
-def move_right(shape):
-      if valid_move(shape, "right"):
+def move_right(shape, board, display):
+      if shape.x < (COLUMNS - shape.width) and board[shape.y][shape.x +1] == ".":
+            # erase shape from board
+            # remove_shape(board, display)
             shape.x += 1
-      return shape
 
-# sees if the move is valid
-def valid_move(shape, direction):
-      valid = False
-      if direction == "left" and shape.x > 0:
-            valid = True
-      elif direction == "right" and shape.x < rows:
-            valid = True
-      return valid
+def remove_shape(board, display, shape):
+      for col in range(shape.height):
+            for row in range(shape.width):
+                  if shape.block[col][row] == "B":
+                        board[shape.y + col][shape.x + row] = "."
+                        pygame.draw.rect(display, pygame.Color("#000000"), shape.x+row, shape.y+col)
+
+def draw_shape(board, display, shape):
+      for col in range(shape.height):
+            for row in range(shape.width):
+                  if shape.block[col][row] == "B":
+                        board[shape.y + col][shape.x + row] = shape.colour
+                        colour = colours[shape.colour]
+                        pygame.draw.rect(display, pygame.Color(colour), shape.x+row, shape.y+col)
+
+
 
 def rotate_shape(block):
       rotation = []
@@ -104,7 +116,6 @@ if __name__ == "__main__":
                         create_board(display)
       pygame.quit()
 
-      
 
       '''game_running = True
       # set up board and get the initial shape
