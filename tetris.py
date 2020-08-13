@@ -55,10 +55,10 @@ class TetrisBlock:
       
       def valid_move(self, board, direction):
             valid_move = True
-            
-            if direction == "left" and board[self.y][self.x - self.width - 1] != "." :
+            # check if block is within the boundary of the board
+            if direction == "left" and board[self.y][self.x - 1] != "." or self.x - self.width > 0:
                   valid_move = False
-            elif direction == "right" and board[self.y][self.x + self.width + 1] != ".":
+            elif direction == "right" and board[self.y][self.x + 1] != "." or self.x + self.width < COLUMNS:
                   valid_move = False
 
             return valid_move
