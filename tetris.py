@@ -39,6 +39,7 @@ class TetrisBlock:
             self.width = len(shape[0])
             self.colour = random.randint(0, 6)
 
+
       def move_left(self, board):
             if self.valid_move(board, "left"):
                   # erase the shape from the board
@@ -52,16 +53,25 @@ class TetrisBlock:
                   remove_shape(board)
                   # move right
                   shape.x += 1
-      
+
+      # Huge shout out to WilliamWFLee!, helped me on this function
       def valid_move(self, board, direction):
             valid_move = True
             # check if block is within the boundary of the board
-            if direction == "left" and board[self.y][self.x - 1] != "." or self.x - self.width > 0:
-                  valid_move = False
-            elif direction == "right" and board[self.y][self.x + 1] != "." or self.x + self.width < COLUMNS:
-                  valid_move = False
-
+            if direction == "right":
+                  for y in range(self.height):  # Top-to-bottom
+                        for x in range(self.width, -1, -1):  # Right-to-left
+                              if self.block[y][x] == "B":
+                                    if board[self.y][self.x + 1] != ".":
+                                          valid_move = False
+            else:
+                  for y in range(self.height):  # Top-to-bottom
+                        for x in range(self.width):  # left-to-right
+                              if self.block[y][x] == "B":
+                                    if board[self.y][self.x - 1] != ".":
+                                          valid_move = False
             return valid_move
+
 
       # add the shape to the board by putting the colour in
       def add_shape(self, board):
