@@ -31,119 +31,89 @@ all_shapes = [OBlock, IBlock1, ZBlock, SBlock, JBlock, LBlock, TBlock]
 colours = ["red", "blue", "green", "pink", "orange", "purple", "yellow"]
 
 class TetrisBlock:
-      def __init__(self, x, y, shape):
+      def __init__(self, x, y):
             self.x = x
             self.y = y
-            self.block = shape
+            self.block = random.choice(all_shapes)
             self.height = len(shape)
             self.width = len(shape[0])
             self.colour = random.randint(0, 6)
 
-# get the next shape
-def get_random_shape():
-      return TetrisBlock(5,0,random.choice(all_shapes))
-
-# return the initial board
-def create_board(display):
-      board=[] 
-      for cols in range(COLUMNS): 
-            col = [] 
-            for row in range(ROWS): 
-                  col.append('.')
-                  pygame.draw.rect(display, pygame.Color("#000000"), ((WIDTH/2+row)-50,0+cols,WIDTH/10,HEIGHT/10))
-            #pygame.draw.rect(display, pygame.Color('#000000'), (70+cols,20+row,10,10))
-            board.append(col)
-      return board
-
-# move the shape left
-def move_left(shape, board, display):
-      if shape.x > 0 and board[shape.y][shape.x -1] == ".":
-            # erase the shape from the board
-            old_board = remove_shape(board, display, shape)
-            new_board = draw_shape(old_board, display, shape)
-
-            shape.x -= 1
-      return new_board
-
-def move_right(shape, board, display):
-      if shape.x < (COLUMNS - shape.width) and board[shape.y][shape.x +1] == ".":
-            # erase shape from board
-            old_board = remove_shape(board, display, shape)
-            new_board = draw_shape(old_board, display, shape)
-
-            shape.x += 1
-      return new_board
-
-def remove_shape(board, display, shape):
-      for col in range(shape.height):
-            for row in range(shape.width):
-                  if shape.block[col][row] == "B":
-                        board[shape.y + col][shape.x + row] = "."
-                        pygame.draw.rect(display, pygame.Color("#000000"), shape.x+row, shape.y+col)
-      return board
-
-def draw_shape(board, display, shape):
-      for col in range(shape.height):
-            for row in range(shape.width):
-                  if shape.block[col][row] == "B":
-                        board[shape.y + col][shape.x + row] = "B"
-                        colour = colours[shape.colour]
-                        pygame.draw.rect(display, pygame.Color(colour), shape.x+row, shape.y+col)
-      return board
-
-# return if there will be a collision between 2 blocks
-def check_collision(board, shape):
-      can_move = True
-      for row in range(shape.width):
-            # check for a 1 below the current position of the shape
-            if board[shape.y + shape.height][shape.x + row] == "B":
-                  # cannot move
-                  can_move = False
-      return can_move
-
-
-def rotate_shape(block):
-      rotation = []
-      # iterate through the width of the matrix
-      for row in range(block.width):
-            new_row = []
-            # iterate through the height of the matrix  
-            for column in range(len(block.shape)-1,-1,-1):
-                  # create a new row
-                  new_row.append(block.shape[column][row])
-            # add each new row to the new rotation
-            rotation.append(new_row)
-      # return a new Tetrisblock object
-      return TetrisBlock(block.x,block.y,rotation)
-
-if __name__ == "__main__":
-      pygame.init()
+      def move_left(self, board):
+            if self.valid_move(board, "left"):
+                  # erase the shape from the board
+                  remove_shape(board)
+                  # move left
+                  shape.x -= 1
       
-      WINDOW_SIZE = (WIDTH,HEIGHT)
-      display = pygame.display.set_mode(WINDOW_SIZE)
-      display.fill((255,255,255))
+      def move_right(self, board):
+            if self.valid_move(board, "right"):
+                  # erase shape from board
+                  remove_shape(board)
+                  # move right
+                  shape.x += 1
+      
+      def valid_move(self, board, direction):
+            valid_move = True
+            
+            if direction == "left" and board[self.y][self.x - self.width - 1] != "." :
+                  valid_move = False
+            elif direction == "right" and board[self.y][self.x + self.width + 1] != ".":
+                  valid_move = False
 
-      running = True
-      while running:
-            for event in pygame.event.get():
-                  # Deal with events here
-                  if running:
-                        # Draw/blit onto the display surface
-                        pygame.display.update()
-                        create_board(display)
-      pygame.quit()
+            return valid_move
+
+      # add the shape to the board by putting the colour in
+      def add_shape(self, board):
+            for col in range(self.height):
+                  for row in range(self.width):
+                        if board[y][x] == "B":
+                              # add colour as integer
+                              grid[self.y + col][self.x + row] = self.colour
+      
+      def remove_shape(self, board):
+            for col in range(self.height):
+                  for row in range(self.width):
+                        if board[col][row] == "B":
+                              board[self.y + col][self.x + row] = "."
+      
+      # rotate the shape
+      def rotate_shape(self, board):
+            # perform a rotation
+            rotation = []
+            # iterate through the width of the matrix
+            for row in range(self.width):
+                  new_row = []
+                  # iterate through the height of the matrix  
+                  for column in range(len(self.block)-1,-1,-1):
+                        # create a new row
+                        new_row.append(self.block[column][row])
+                  # add each new row to the new rotation
+                  rotation.append(new_row)
+            
+            board_right = self.x + len(rotation[0])
+            board_left = self.x - len(rotation[0])
+
+            if (board_right < len(board[0])) and (board_left > len(board[0][0])):
+                  self.block = rotation
+                  self.width = len(self.block[0])
+                  self.height = len(self.block)
+      
+      # check if there will be a collision between current block and row below
+      def check_collision(self, board):
+            collision = False
+            # iterate through the shape
+            for x in range(self.width):
+                  if(self.block[self.height-1][x] =="B") and board[self.y + self.height][self.x + x] != ".":
+                        # collision detected
+                        collision = True
+            return collision
 
 
-      '''game_running = True
-      # set up board and get the initial shape
-      first_shape = get_random_shape()
-      print(first_shape.shape)
-      board = create_board()
-      print(board)
-      a = rotate_shape(first_shape)
-      print(a.shape)
-      print(rotate_shape(a).shape)
-      # main game loop
-      # while game_running:'''
 
+
+            
+
+
+            
 
