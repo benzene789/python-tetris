@@ -119,11 +119,39 @@ class TetrisBlock:
                         collision = True
             return collision
 
+class TetrisBoard:
 
+      def __init__(self):
+            self.board = self.create_board()
+            self.score = 0
 
+      # create the board
+      def create_board(self):
+            board=[] 
+            for cols in range(COLUMNS): 
+                  col = [] 
+                  for row in range(ROWS): 
+                        col.append('.')
+                  board.append(col)
+            return board
 
-            
+      # check if a row has been cleared
+      def check_full_row(self):
+            filled = True
+            for y in range(COLUMNS):
+                  for x in range(ROWS):
+                        if self.board[y][x] == ".":
+                              row  = x
+                              filled = False
+                  if filled:
+                        for row in range(ROWS):
+                              self.board[y][row] = "."
+                        self.move_blocks_down()
+                        self.score += 10
 
-
-            
-
+      # Call this function to move the row above
+      # the cleared row down by one
+      def move_blocks_down(self):
+            for y in range(COLUMNS,0,-1):
+                  for x in range(ROWS):
+                        self.board[y][x] = self.board[y-1][x]
