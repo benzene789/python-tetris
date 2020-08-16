@@ -3,6 +3,7 @@ import random
 
 ROWS = 10
 COLUMNS = 24
+
 WIDTH = 500
 HEIGHT = 500
 
@@ -31,9 +32,9 @@ all_shapes = [OBlock, IBlock1, ZBlock, SBlock, JBlock, LBlock, TBlock]
 colours = ["red", "blue", "green", "pink", "orange", "purple", "yellow"]
 
 class TetrisBlock:
-      def __init__(self, x, y):
-            self.x = x
-            self.y = y
+      def __init__(self):
+            self.x = 5
+            self.y = 0
             self.block = random.choice(all_shapes)
             self.height = len(shape)
             self.width = len(shape[0])
@@ -81,6 +82,7 @@ class TetrisBlock:
                               # add colour as integer
                               grid[self.y + col][self.x + row] = self.colour
       
+      # remove the previous location of the shape
       def remove_shape(self, board):
             for col in range(self.height):
                   for row in range(self.width):
@@ -155,3 +157,54 @@ class TetrisBoard:
             for y in range(COLUMNS,0,-1):
                   for x in range(ROWS):
                         self.board[y][x] = self.board[y-1][x]
+      
+      def check_game_over(self):
+            full_board = False
+            for x in range(ROWS):
+                  if self.board[0][x] != ".":
+                        full_board = True
+            return full_board
+
+# Main game loop
+if __name__ == "__main__":
+      block = TetrisBlock()
+      board = TetrisBoard()
+
+      board[block.y][block.x] = block.colour
+
+      game_over = False
+
+      for event in pygame.event.get():
+            while not game_over:
+                  collision_detected = False
+                  if event.type == pygame.QUIT:
+                        raise SystemExit
+                  elif event.type == pygame.KEYDOWN:
+                        if event.key == K_RIGHT:
+                              print("Right key pressed")
+                              block.move_right(board)
+
+                        elif event.key == K_LEFT:
+                              print("Left key pressed")
+                              block.move_left(board)
+                        elif event.key == K_SPACE:
+                              block.rotate_shape(board)
+
+                  collision_detected = block.check_collision(board)
+                  if not collision_detected:
+                        # remove shape
+                        block.remove_shape(board)
+                        block.y += 1
+                        # redraw the shape
+                        block.add_shape(board)
+                  # if a collision with the next row is detected, create a new shape
+                  else:
+                        if board.check_game_over():
+                              game_over = True
+                              print("Game over")
+                              print(board.score)
+                        else:
+                              block = TetrisBlock()
+                              board.check_full_row()
+                  
+                  
