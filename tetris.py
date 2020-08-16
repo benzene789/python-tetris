@@ -29,7 +29,7 @@ TBlock = [[".","B","."],
 
 all_shapes = [OBlock, IBlock1, ZBlock, SBlock, JBlock, LBlock, TBlock]
 
-colours = ["red", "blue", "green", "pink", "orange", "purple", "yellow"]
+colours = ["", "blue", "green", "pink", "orange", "purple", "yellow", "red"]
 
 class TetrisBlock:
       def __init__(self):
@@ -38,7 +38,7 @@ class TetrisBlock:
             self.block = random.choice(all_shapes)
             self.height = len(shape)
             self.width = len(shape[0])
-            self.colour = random.randint(0, 6)
+            self.colour = random.randint(1, 7)
 
 
       def move_left(self, board):
@@ -164,6 +164,22 @@ class TetrisBoard:
                   if self.board[0][x] != ".":
                         full_board = True
             return full_board
+      
+      def draw_board(self, display):
+            left = -100
+            top = 250
+            for y in range(len(self.board)):
+                  for x in range(len(self.board[0])):
+                        draw_x = left + (x * 50)
+                        draw_y = top - (y * 50)
+                        colour = self.board[y][x]
+                        if colour == "B":
+                              # colour in black
+                              pygame.draw.rect(display, pygame.Color("#000"), (draw_x, draw_y, 10, 10))
+                              
+                        else:
+                              # colour in specified colour
+                              pygame.draw.rect(display, pygame.Color(colours[colour]), (draw_x, draw_y, 10, 10))
 
 # Main game loop
 if __name__ == "__main__":
@@ -173,10 +189,11 @@ if __name__ == "__main__":
       board[block.y][block.x] = block.colour
 
       game_over = False
+      while not game_over:
+            collision_detected = False
 
-      for event in pygame.event.get():
-            while not game_over:
-                  collision_detected = False
+            for event in pygame.event.get():
+
                   if event.type == pygame.QUIT:
                         raise SystemExit
                   elif event.type == pygame.KEYDOWN:
@@ -190,21 +207,24 @@ if __name__ == "__main__":
                         elif event.key == K_SPACE:
                               block.rotate_shape(board)
 
-                  collision_detected = block.check_collision(board)
-                  if not collision_detected:
-                        # remove shape
-                        block.remove_shape(board)
-                        block.y += 1
-                        # redraw the shape
-                        block.add_shape(board)
-                  # if a collision with the next row is detected, create a new shape
-                  else:
-                        if board.check_game_over():
-                              game_over = True
-                              print("Game over")
-                              print(board.score)
-                        else:
-                              block = TetrisBlock()
-                              board.check_full_row()
+            # check for collision
+            collision_detected = block.check_collision(board)
+            if not collision_detected:
+                  # remove shape
+                  block.remove_shape(board)
+                  block.y += 1
+                  # redraw the shape
+                  block.add_shape(board)
+            # if a collision with the next row is detected, create a new shape
+            else:
+                  end_of_game = board.check_game_over()
+
+            if board.check_game_over():
+                  game_over = True
+                  print("Game over")
+                  print(board.score)
+            else:
+                  block = TetrisBlock()
+                  board.check_full_row()
                   
                   
