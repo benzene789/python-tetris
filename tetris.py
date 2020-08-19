@@ -36,8 +36,8 @@ class TetrisBlock:
             self.x = 5
             self.y = 0
             self.block = random.choice(all_shapes)
-            self.height = len(shape)
-            self.width = len(shape[0])
+            self.height = len(self.block)
+            self.width = len(self.block[0])
             self.colour = random.randint(1, 7)
 
 
@@ -78,7 +78,7 @@ class TetrisBlock:
       def add_shape(self, board):
             for col in range(self.height):
                   for row in range(self.width):
-                        if board[y][x] == "B":
+                        if board[col][row] == "B":
                               # add colour as integer
                               grid[self.y + col][self.x + row] = self.colour
       
@@ -158,12 +158,12 @@ class TetrisBoard:
                   for x in range(ROWS):
                         self.board[y][x] = self.board[y-1][x]
       
-      def check_game_over(self):
-            full_board = False
-            for x in range(ROWS):
-                  if self.board[0][x] != ".":
-                        full_board = True
-            return full_board
+      # def check_game_over(self):
+      #       full_board = False
+      #       for x in range(ROWS):
+      #             if self.board[0][x] != ".":
+      #                   full_board = True
+      #       return full_board
       
       def draw_board(self, display):
             left = -100
@@ -173,20 +173,23 @@ class TetrisBoard:
                         draw_x = left + (x * 50)
                         draw_y = top - (y * 50)
                         colour = self.board[y][x]
-                        if colour == "B":
+                        
+                        if colour == ".":
                               # colour in black
-                              pygame.draw.rect(display, pygame.Color("#000"), (draw_x, draw_y, 10, 10))
+                              pygame.draw.rect(display, pygame.Color("#000000"), (draw_x, draw_y, 10, 10))
                               
                         else:
+                              print(colours[colour])
                               # colour in specified colour
                               pygame.draw.rect(display, pygame.Color(colours[colour]), (draw_x, draw_y, 10, 10))
 
 # Main game loop
 if __name__ == "__main__":
+      # set display
+      display = pygame.display.set_mode((WIDTH, HEIGHT))
       block = TetrisBlock()
-      board = TetrisBoard()
-
-      board[block.y][block.x] = block.colour
+      game_board = TetrisBoard()
+      game_board.board[block.y][block.x] = block.colour
 
       game_over = False
       while not game_over:
@@ -199,32 +202,34 @@ if __name__ == "__main__":
                   elif event.type == pygame.KEYDOWN:
                         if event.key == K_RIGHT:
                               print("Right key pressed")
-                              block.move_right(board)
+                              block.move_right(game_board.board)
 
                         elif event.key == K_LEFT:
                               print("Left key pressed")
-                              block.move_left(board)
+                              block.move_left(game_board.board)
                         elif event.key == K_SPACE:
-                              block.rotate_shape(board)
+                              block.rotate_shape(game_board.board)
 
             # check for collision
-            collision_detected = block.check_collision(board)
+            collision_detected = block.check_collision(game_board.board)
             if not collision_detected:
                   # remove shape
-                  block.remove_shape(board)
+                  block.remove_shape(game_board.board)
                   block.y += 1
                   # redraw the shape
-                  block.add_shape(board)
+                  block.add_shape(game_board.board)
             # if a collision with the next row is detected, create a new shape
             else:
-                  end_of_game = board.check_game_over()
+                  end_of_game = game_board.check_game_over()
 
-            if board.check_game_over():
-                  game_over = True
-                  print("Game over")
-                  print(board.score)
-            else:
-                  block = TetrisBlock()
-                  board.check_full_row()
-                  
+            # if game_board.check_game_over():
+            #       game_over = True
+            #       print("Game over")
+            #       print(game_board.score)
+            # else:
+            block = TetrisBlock()
+            game_board.check_full_row()
+            #print(game_board.board)
+            # draw the board
+            game_board.draw_board(display)
                   
