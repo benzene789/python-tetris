@@ -1,8 +1,8 @@
 import pygame
 import random
 
-ROWS = 10
-COLUMNS = 24
+COLUMNS = 10
+ROWS = 24
 
 WIDTH = 550
 HEIGHT = 550
@@ -53,7 +53,7 @@ class TetrisBlock:
       def move_right(self):
             if self.valid_move("right"):
                   # erase shape from board
-                  self,remove_shape()
+                  self.remove_shape()
                   # move right
                   self.x += 1
 
@@ -78,18 +78,18 @@ class TetrisBlock:
 
       # add the shape to the board by putting the colour in
       def add_shape(self):
-            for col in range(self.height):
-                  for row in range(self.width):
-                        if self.stored_board[col][row] == "B":
+            for row in range(self.height):
+                  for col in range(self.width):
+                        if self.block[row][col] == "B" and (self.y + row < ROWS and self.x + col < COLUMNS):
                               # add colour as integer
-                              self.stored_board[self.y + col][self.x + row] = self.colour
+                              self.stored_board[self.y + row][self.x + col] = self.colour
       
       # remove the previous location of the shape
       def remove_shape(self):
-            for col in range(self.height):
-                  for row in range(self.width):
-                        if self.stored_board[col][row] == "B":
-                              self.stored_board[self.y + col][self.x + row] = "."
+            for row in range(self.height):
+                  for col in range(self.width):
+                        if self.block[row][col] == "B" and (self.y + row< ROWS and self.x + col < COLUMNS):
+                              self.stored_board[self.y + row][self.x + col] = "."
       
       # rotate the shape
       def rotate_shape(self):
@@ -118,12 +118,14 @@ class TetrisBlock:
             collision = False
             # iterate through the shape
             for x in range(self.width):
-                  print(self.stored_board)
-                  if(self.block[self.height-1][x] =="B") and self.stored_board[self.y + self.height][self.x + x] != ".":
-                        # collision detected
-                        collision = True
+                  print(self.y + self.height)
+                  if self.y + self.height < ROWS:
+                        if(self.block[self.height-1][x] =="B") and self.stored_board[self.y + self.height][self.x + x] != ".":
+                              # collision detected
+                              collision = True
             return collision
       
+
 
 class TetrisBoard:
 
@@ -134,32 +136,32 @@ class TetrisBoard:
       # create the board
       def create_board(self):
             board=[] 
-            for cols in range(COLUMNS): 
-                  col = [] 
-                  for row in range(ROWS): 
-                        col.append('.')
-                  board.append(col)
+            for rows in range(ROWS): 
+                  row = [] 
+                  for cols in range(COLUMNS): 
+                        row.append('.')
+                  board.append(row)
             return board
 
       # check if a row has been cleared
       def check_full_row(self):
             filled = True
-            for y in range(COLUMNS):
-                  for x in range(ROWS):
+            for y in range(ROWS):
+                  for x in range(COLUMNS):
                         if self.board[y][x] == ".":
                               row  = x
                               filled = False
                   if filled:
-                        for row in range(ROWS):
-                              self.board[y][row] = "."
+                        for col in range(COLUMNS):
+                              self.board[y][col] = "."
                         self.move_blocks_down()
                         self.score += 10
 
       # Call this function to move the row above
       # the cleared row down by one
       def move_blocks_down(self):
-            for y in range(COLUMNS,0,-1):
-                  for x in range(ROWS):
+            for y in range(ROWS,0,-1):
+                  for x in range(COLU):
                         self.board[y][x] = self.board[y-1][x]
       
       # def check_game_over(self):
@@ -224,16 +226,16 @@ if __name__ == "__main__":
                   # redraw the shape
                   block.add_shape()
             # if a collision with the next row is detected, create a new shape
-            else:
-                  end_of_game = game_board.check_game_over()
+            # else:
+            #       end_of_game = game_board.check_game_over()
 
             # if game_board.check_game_over():
             #       game_over = True
             #       print("Game over")
             #       print(game_board.score)
             # else:
-            # block = TetrisBlock(game_board.board)
-            game_board.check_full_row()
+            #block = TetrisBlock(game_board.board)
+            #game_board.check_full_row()
             #print(game_board.board)
             # draw the board
             game_board.draw_board(display)
