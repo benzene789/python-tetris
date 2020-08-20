@@ -4,8 +4,8 @@ import random
 ROWS = 10
 COLUMNS = 24
 
-WIDTH = 500
-HEIGHT = 500
+WIDTH = 550
+HEIGHT = 550
 
 OBlock = [["B","B"],
           ["B","B"]]
@@ -32,7 +32,7 @@ all_shapes = [OBlock, IBlock1, ZBlock, SBlock, JBlock, LBlock, TBlock]
 colours = ["", "blue", "green", "pink", "orange", "purple", "yellow", "red"]
 
 class TetrisBlock:
-      def __init__(self):
+      def __init__(self, board):
             self.x = 5
             self.y = 0
             self.block = random.choice(all_shapes)
@@ -40,57 +40,59 @@ class TetrisBlock:
             self.width = len(self.block[0])
             self.colour = random.randint(1, 7)
 
+            self.stored_board = board
 
-      def move_left(self, board):
-            if self.valid_move(board, "left"):
+
+      def move_left(self):
+            if self.valid_move("left"):
                   # erase the shape from the board
-                  remove_shape(board)
+                  self.remove_shape()
                   # move left
-                  shape.x -= 1
+                  self.x -= 1
       
-      def move_right(self, board):
-            if self.valid_move(board, "right"):
+      def move_right(self):
+            if self.valid_move("right"):
                   # erase shape from board
-                  remove_shape(board)
+                  self,remove_shape()
                   # move right
-                  shape.x += 1
+                  self.x += 1
 
       # Huge shout out to WilliamWFLee!, helped me on this function
-      def valid_move(self, board, direction):
+      def valid_move(self, direction):
             valid_move = True
             # check if block is within the boundary of the board
             if direction == "right":
                   for y in range(self.height):  # Top-to-bottom
-                        for x in range(self.width, -1, -1):  # Right-to-left
+                        for x in range(self.width-1, -1, -1):  # Right-to-left
                               if self.block[y][x] == "B":
-                                    if board[self.y][self.x + 1] != ".":
+                                    if self.stored_board[self.y][self.x + 1] != ".":
                                           valid_move = False
             else:
                   for y in range(self.height):  # Top-to-bottom
                         for x in range(self.width):  # left-to-right
                               if self.block[y][x] == "B":
-                                    if board[self.y][self.x - 1] != ".":
+                                    if self.stored_board[self.y][self.x - 1] != ".":
                                           valid_move = False
             return valid_move
 
 
       # add the shape to the board by putting the colour in
-      def add_shape(self, board):
+      def add_shape(self):
             for col in range(self.height):
                   for row in range(self.width):
-                        if board[col][row] == "B":
+                        if self.stored_board[col][row] == "B":
                               # add colour as integer
-                              grid[self.y + col][self.x + row] = self.colour
+                              self.stored_board[self.y + col][self.x + row] = self.colour
       
       # remove the previous location of the shape
-      def remove_shape(self, board):
+      def remove_shape(self):
             for col in range(self.height):
                   for row in range(self.width):
-                        if board[col][row] == "B":
-                              board[self.y + col][self.x + row] = "."
+                        if self.stored_board[col][row] == "B":
+                              self.stored_board[self.y + col][self.x + row] = "."
       
       # rotate the shape
-      def rotate_shape(self, board):
+      def rotate_shape(self):
             # perform a rotation
             rotation = []
             # iterate through the width of the matrix
@@ -106,20 +108,22 @@ class TetrisBlock:
             board_right = self.x + len(rotation[0])
             board_left = self.x - len(rotation[0])
 
-            if (board_right < len(board[0])) and (board_left > len(board[0][0])):
+            if (board_right < len(self.stored_board[0])) and (board_left > len(self.stored_board[0][0])):
                   self.block = rotation
                   self.width = len(self.block[0])
                   self.height = len(self.block)
-      
+                  
       # check if there will be a collision between current block and row below
-      def check_collision(self, board):
+      def check_collision(self):
             collision = False
             # iterate through the shape
             for x in range(self.width):
-                  if(self.block[self.height-1][x] =="B") and board[self.y + self.height][self.x + x] != ".":
+                  print(self.stored_board)
+                  if(self.block[self.height-1][x] =="B") and self.stored_board[self.y + self.height][self.x + x] != ".":
                         # collision detected
                         collision = True
             return collision
+      
 
 class TetrisBoard:
 
@@ -166,29 +170,30 @@ class TetrisBoard:
       #       return full_board
       
       def draw_board(self, display):
-            left = -100
-            top = 250
+            left = 0
+            top = 0
             for y in range(len(self.board)):
                   for x in range(len(self.board[0])):
-                        draw_x = left + (x * 50)
-                        draw_y = top - (y * 50)
+                        draw_x = left + (x * 25)
+                        draw_y = top + (y * 25)
                         colour = self.board[y][x]
                         
                         if colour == ".":
                               # colour in black
-                              pygame.draw.rect(display, pygame.Color("#000000"), (draw_x, draw_y, 10, 10))
+                              pygame.draw.rect(display, pygame.Color("#FFFFFF"), (draw_x, draw_y, 25, 25))
                               
                         else:
                               print(colours[colour])
                               # colour in specified colour
-                              pygame.draw.rect(display, pygame.Color(colours[colour]), (draw_x, draw_y, 10, 10))
+                              pygame.draw.rect(display, pygame.Color(colours[colour]), (draw_x, draw_y, 25, 25))
 
 # Main game loop
 if __name__ == "__main__":
       # set display
       display = pygame.display.set_mode((WIDTH, HEIGHT))
-      block = TetrisBlock()
       game_board = TetrisBoard()
+      block = TetrisBlock(game_board.board)
+      
       game_board.board[block.y][block.x] = block.colour
 
       game_over = False
@@ -200,24 +205,24 @@ if __name__ == "__main__":
                   if event.type == pygame.QUIT:
                         raise SystemExit
                   elif event.type == pygame.KEYDOWN:
-                        if event.key == K_RIGHT:
+                        if event.key == pygame.K_RIGHT:
                               print("Right key pressed")
-                              block.move_right(game_board.board)
+                              block.move_right()
 
-                        elif event.key == K_LEFT:
+                        elif event.key == pygame.K_LEFT:
                               print("Left key pressed")
-                              block.move_left(game_board.board)
-                        elif event.key == K_SPACE:
-                              block.rotate_shape(game_board.board)
+                              block.move_left()
+                        elif event.key == pygame.K_SPACE:
+                              block.rotate_shape()
 
             # check for collision
-            collision_detected = block.check_collision(game_board.board)
+            collision_detected = block.check_collision()
             if not collision_detected:
                   # remove shape
-                  block.remove_shape(game_board.board)
+                  block.remove_shape()
                   block.y += 1
                   # redraw the shape
-                  block.add_shape(game_board.board)
+                  block.add_shape()
             # if a collision with the next row is detected, create a new shape
             else:
                   end_of_game = game_board.check_game_over()
@@ -227,9 +232,11 @@ if __name__ == "__main__":
             #       print("Game over")
             #       print(game_board.score)
             # else:
-            block = TetrisBlock()
+            # block = TetrisBlock(game_board.board)
             game_board.check_full_row()
             #print(game_board.board)
             # draw the board
             game_board.draw_board(display)
+
+            pygame.display.update()
                   
