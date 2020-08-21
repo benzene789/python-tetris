@@ -118,7 +118,6 @@ class TetrisBlock:
             collision = False
             # iterate through the shape
             for x in range(self.width):
-                  print(self.y + self.height)
                   if self.y + self.height < ROWS:
                         if(self.block[self.height-1][x] =="B") and self.stored_board[self.y + self.height][self.x + x] != ".":
                               # collision detected
@@ -185,7 +184,6 @@ class TetrisBoard:
                               pygame.draw.rect(display, pygame.Color("#FFFFFF"), (draw_x, draw_y, 25, 25))
                               
                         else:
-                              print(colours[colour])
                               # colour in specified colour
                               pygame.draw.rect(display, pygame.Color(colours[colour]), (draw_x, draw_y, 25, 25))
 
@@ -198,12 +196,16 @@ if __name__ == "__main__":
       
       game_board.board[block.y][block.x] = block.colour
 
+      clock = pygame.time.Clock()
+
+      fall_time = 0
+      threshold = 1000
+
       game_over = False
       while not game_over:
             collision_detected = False
 
             for event in pygame.event.get():
-
                   if event.type == pygame.QUIT:
                         raise SystemExit
                   elif event.type == pygame.KEYDOWN:
@@ -217,28 +219,31 @@ if __name__ == "__main__":
                         elif event.key == pygame.K_SPACE:
                               block.rotate_shape()
 
-            # check for collision
-            collision_detected = block.check_collision()
-            if not collision_detected:
+            # check if the current piece is at the bottom
+            if block.y == ROWS - block.height:
+                  block = TetrisBlock(game_board.board)
+                  game_board.check_full_row()
+
+            # check for collision with next row
+            elif not block.check_collision():
                   # remove shape
                   block.remove_shape()
                   block.y += 1
                   # redraw the shape
                   block.add_shape()
-            # if a collision with the next row is detected, create a new shape
-            # else:
-            #       end_of_game = game_board.check_game_over()
 
-            # if game_board.check_game_over():
-            #       game_over = True
-            #       print("Game over")
-            #       print(game_board.score)
-            # else:
-            #block = TetrisBlock(game_board.board)
-            #game_board.check_full_row()
-            #print(game_board.board)
+            else:
+                  block = TetrisBlock(game_board.board)
+                  game_board.check_full_row()
+            
             # draw the board
             game_board.draw_board(display)
+
+            # keep track of how much time has elapsed
+            fall_time += clock.tick()
+            
+            if fall_time > threshold:
+                  fall_time %= threshold
 
             pygame.display.update()
                   
