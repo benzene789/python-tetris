@@ -59,20 +59,18 @@ class TetrisBlock:
 
       # Huge shout out to WilliamWFLee!, helped me on this function
       def valid_move(self, direction):
-            valid_move = True
+            valid_move = False
             # check if block is within the boundary of the board
+            # when moving both left and right
             if direction == "right":
-                  for y in range(self.height):  # Top-to-bottom
-                        for x in range(self.width-1, -1, -1):  # Right-to-left
-                              if self.block[y][x] == "B":
-                                    if self.stored_board[self.y][self.x + 1] != ".":
-                                          valid_move = False
+                  if self.x + self.width < COLUMNS:
+                        if self.stored_board[self.y][self.x + self.width] == ".":
+                              valid_move = True
             else:
-                  for y in range(self.height):  # Top-to-bottom
-                        for x in range(self.width):  # left-to-right
-                              if self.block[y][x] == "B":
-                                    if self.stored_board[self.y][self.x - 1] != ".":
-                                          valid_move = False
+                  print(self.x)
+                  if self.x > 0:
+                        if self.stored_board[self.y][self.x - 1] == ".":
+                              valid_move = True
             return valid_move
 
 
@@ -93,6 +91,8 @@ class TetrisBlock:
       
       # rotate the shape
       def rotate_shape(self):
+            # first remove the old shape
+            self.remove_shape()
             # perform a rotation
             rotation = []
             # iterate through the width of the matrix
@@ -106,9 +106,11 @@ class TetrisBlock:
                   rotation.append(new_row)
             
             board_right = self.x + len(rotation[0])
-            board_left = self.x - len(rotation[0])
 
-            if (board_right < len(self.stored_board[0])) and (board_left > len(self.stored_board[0][0])):
+            print(board_right)
+            print(len(self.stored_board[0]))
+
+            if board_right < len(self.stored_board[0]):
                   self.block = rotation
                   self.width = len(self.block[0])
                   self.height = len(self.block)
@@ -227,6 +229,7 @@ if __name__ == "__main__":
                         block = TetrisBlock(game_board.board)
                         game_board.check_full_row()
 
+
                   # check for collision with next row
                   elif not block.check_collision():
                         # remove shape
@@ -239,10 +242,9 @@ if __name__ == "__main__":
                         block = TetrisBlock(game_board.board)
                         game_board.check_full_row()
 
-
                   fall_time %= threshold
                   # draw the board
-                  game_board.draw_board(display)
+            game_board.draw_board(display)
 
             pygame.display.update()
                   
