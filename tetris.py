@@ -4,8 +4,8 @@ import random
 COLUMNS = 10
 ROWS = 24
 
-WIDTH = 550
-HEIGHT = 550
+WIDTH = 1550
+HEIGHT = 1550
 
 OBlock = [["B","B"],
           ["B","B"]]
@@ -160,7 +160,7 @@ class TetrisBoard:
       # the cleared row down by one
       def move_blocks_down(self):
             for y in range(ROWS,0,-1):
-                  for x in range(COLU):
+                  for x in range(COLUMNS):
                         self.board[y][x] = self.board[y-1][x]
       
       # def check_game_over(self):
@@ -212,38 +212,37 @@ if __name__ == "__main__":
                         if event.key == pygame.K_RIGHT:
                               print("Right key pressed")
                               block.move_right()
-
                         elif event.key == pygame.K_LEFT:
                               print("Left key pressed")
                               block.move_left()
                         elif event.key == pygame.K_SPACE:
                               block.rotate_shape()
 
-            # check if the current piece is at the bottom
-            if block.y == ROWS - block.height:
-                  block = TetrisBlock(game_board.board)
-                  game_board.check_full_row()
-
-            # check for collision with next row
-            elif not block.check_collision():
-                  # remove shape
-                  block.remove_shape()
-                  block.y += 1
-                  # redraw the shape
-                  block.add_shape()
-
-            else:
-                  block = TetrisBlock(game_board.board)
-                  game_board.check_full_row()
-            
-            # draw the board
-            game_board.draw_board(display)
-
             # keep track of how much time has elapsed
             fall_time += clock.tick()
-            
+
             if fall_time > threshold:
+                  # check if the current piece is at the bottom
+                  if block.y == ROWS - block.height:
+                        block = TetrisBlock(game_board.board)
+                        game_board.check_full_row()
+
+                  # check for collision with next row
+                  elif not block.check_collision():
+                        # remove shape
+                        block.remove_shape()
+                        block.y += 1
+                        # redraw the shape
+                        block.add_shape()
+
+                  else:
+                        block = TetrisBlock(game_board.board)
+                        game_board.check_full_row()
+
+
                   fall_time %= threshold
+                  # draw the board
+                  game_board.draw_board(display)
 
             pygame.display.update()
                   
