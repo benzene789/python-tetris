@@ -146,23 +146,26 @@ class TetrisBoard:
 
       # check if a row has been cleared
       def check_full_row(self):
+            count = 0
             filled = True
             for y in range(ROWS):
                   for x in range(COLUMNS):
-                        if self.board[y][x] == ".":
-                              row  = x
-                              filled = False
-                  if filled:
+                        if self.board[y][x] != ".":
+                              count += 1
+                  print(count)
+                  if count == COLUMNS:
                         for col in range(COLUMNS):
                               self.board[y][col] = "."
                         self.move_blocks_down()
                         self.score += 10
+                  count = 0
 
       # Call this function to move the row above
       # the cleared row down by one
       def move_blocks_down(self):
-            for y in range(ROWS,0,-1):
+            for y in range(ROWS-1,0,-1):
                   for x in range(COLUMNS):
+                        print(self.board[y-1][x])
                         self.board[y][x] = self.board[y-1][x]
       
       # def check_game_over(self):
