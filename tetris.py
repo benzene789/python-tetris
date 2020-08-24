@@ -53,14 +53,12 @@ class TetrisBlock:
 
     def move_right(self):
         if self.valid_move("right"):
-            print("F")
             # erase shape from board
             self.remove_shape()
             # move right
             self.x += 1
             block.add_shape()
         else:
-            print("Dhfg")
 
             self.x = self.x
 
@@ -71,9 +69,8 @@ class TetrisBlock:
         # check if block is within the boundary of the board
         # when moving both left and right
         if direction == "right":
-            print(self.x + self.width)
             if self.x + self.width < COLUMNS:
-
+                print(self.height)
                 for y in range(self.height):
                   if(self.block[y][self.width-1] == "B") and self.stored_board[self.y + y][self.x + self.width] != ".":
                         valid_move = False
@@ -125,7 +122,7 @@ class TetrisBlock:
 
         board_right = self.x + len(rotation[0])
 
-        if board_right < len(self.stored_board[0]):
+        if board_right <= len(self.stored_board[0]):
             self.block = rotation
             self.width = len(self.block[0])
             self.height = len(self.block)
@@ -134,13 +131,15 @@ class TetrisBlock:
 
     # check if there will be a collision between current block and row below
     def check_collision(self):
-        collision = False
+        no_collision = True
         # iterate through the shape
         for x in range(self.width):
             if self.y + self.height < ROWS:
-                if(self.block[self.height-1][x] == "B") and self.stored_board[self.y + self.height][self.x + x] != ".":
-                    # collision detected
-                    collision = True
+                if self.block[self.height-1][x] == "B":
+                    print(self.stored_board[self.y + self.height][self.x +x])
+                    if self.stored_board[self.y + self.height][self.x +x] != ".":
+                        no_collision = False
+
         return collision
 
 
@@ -201,7 +200,7 @@ class TetrisBoard:
                 if colour == ".":
                     # colour in black
                     pygame.draw.rect(display, pygame.Color(
-                        "#FFFFFF"), (draw_x, draw_y, 25, 25))
+                        "#000000"), (draw_x, draw_y, 25, 25))
 
                 else:
                     # colour in specified colour
@@ -213,6 +212,7 @@ class TetrisBoard:
 if __name__ == "__main__":
     # set display
     display = pygame.display.set_mode((WIDTH, HEIGHT))
+    display.fill(pygame.Color("white"))
     game_board = TetrisBoard()
     block = TetrisBlock(game_board.board)
 
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
 
     fall_time = 0
-    threshold = 1000
+    threshold = 500
 
     game_over = False
     while not game_over:
@@ -249,7 +249,8 @@ if __name__ == "__main__":
                 game_board.check_full_row()
 
             # check for collision with next row
-            elif not block.check_collision():
+            elif block.check_collision():
+                print("falling")
                 # remove shape
                 block.remove_shape()
                 block.y += 1
