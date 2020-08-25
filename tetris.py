@@ -12,11 +12,11 @@ OBlock = [["B", "B"],
 
 IBlock1 = [["B", "B", "B", "B"]]
 
-JBlock = [["B", ".", ".", "."],
-          ["B", "B", "B", "B"]]
+JBlock = [["B", ".", "."],
+          ["B", "B", "B"]]
 
-LBlock = [[".", ".", ".", "B"],
-          ["B", "B", "B", "B"]]
+LBlock = [[".", ".", "B"],
+          ["B", "B", "B"]]
 
 SBlock = [[".", "B", "B"],
           ["B", "B", "."]]
@@ -136,11 +136,10 @@ class TetrisBlock:
         for x in range(self.width):
             if self.y + self.height < ROWS:
                 if self.block[self.height-1][x] == "B":
-                    print(self.stored_board[self.y + self.height][self.x +x])
                     if self.stored_board[self.y + self.height][self.x +x] != ".":
                         no_collision = False
 
-        return collision
+        return no_collision
 
 
 class TetrisBoard:
@@ -181,12 +180,11 @@ class TetrisBoard:
             for x in range(COLUMNS):
                 self.board[y][x] = self.board[y-1][x]
 
-    # def check_game_over(self):
-    #       full_board = False
-    #       for x in range(ROWS):
-    #             if self.board[0][x] != ".":
-    #                   full_board = True
-    #       return full_board
+    def check_game_over(self, piece):
+        if piece.y == 0:
+            return True
+        return False
+
 
     def draw_board(self, display):
         left = 0
@@ -250,7 +248,6 @@ if __name__ == "__main__":
 
             # check for collision with next row
             elif block.check_collision():
-                print("falling")
                 # remove shape
                 block.remove_shape()
                 block.y += 1
@@ -258,6 +255,9 @@ if __name__ == "__main__":
                 block.add_shape()
 
             else:
+                if game_board.check_game_over(block):
+                    game_over = True
+
                 block = TetrisBlock(game_board.board)
                 game_board.check_full_row()
 
