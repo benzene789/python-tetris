@@ -70,7 +70,6 @@ class TetrisBlock:
         # when moving both left and right
         if direction == "right":
             if self.x + self.width < COLUMNS:
-                print(self.height)
                 for y in range(self.height):
                   if(self.block[y][self.width-1] == "B") and self.stored_board[self.y + y][self.x + self.width] != ".":
                         valid_move = False
@@ -130,16 +129,21 @@ class TetrisBlock:
         block.add_shape()
 
     # check if there will be a collision between current block and row below
-    def check_collision(self):
-        no_collision = True
-        # iterate through the shape
-        for x in range(self.width):
-            if self.y + self.height < ROWS:
-                if self.block[self.height-1][x] == "B":
-                    if self.stored_board[self.y + self.height][self.x +x] != ".":
-                        no_collision = False
+    # Another huge shout out for WilliamWFLee, helped me on this function
+    def check_collision(self, dx: int, dy: int):
 
-        return no_collision
+        can_move = True
+        self.remove_shape()  # Remove the shape from the board
+        for y, row in enumerate(self.block):  # self.block is your representaton of the block
+            for x, square in enumerate(row):
+                if square == "B":  # If the square if a block
+                    # If we assume (self.x, self.y) represents the top-left of the tetromino on the grid
+                    if self.stored_board[self.y + y + dy][self.x + x + dx] != ".":
+                        can_move = False
+                        break # Break here. One of the blocks can't move in that direction, then the whole shape cannot move
+
+        self.add_shape()  # Place the shape back on the grid
+        return can_move
 
 
 class TetrisBoard:
@@ -247,7 +251,7 @@ if __name__ == "__main__":
                 game_board.check_full_row()
 
             # check for collision with next row
-            elif block.check_collision():
+            elif block.check_collision(0,1):
                 # remove shape
                 block.remove_shape()
                 block.y += 1
