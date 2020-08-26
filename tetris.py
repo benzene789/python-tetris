@@ -191,7 +191,10 @@ class TetrisBoard:
         # the row is full
         count = 0
 
-        for y in range(ROWS-1, 0, -1):
+        # lines cleared at a time
+        lines_cleared_per_drop = 0
+
+        for y in range(ROWS):
             for x in range(COLUMNS):
                 if self.board[y][x] != ".":
                     count += 1
@@ -202,11 +205,12 @@ class TetrisBoard:
 
                 # increment amount of lines cleared
                 self.lines_cleared += 1
+                lines_cleared_per_drop += 1
 
-                self.increase_score(self.lines_cleared)
-                
             count = 0
+        self.increase_score(lines_cleared_per_drop)
         self.count_cleared_lines()
+        lines_cleared_per_drop = 0
 
     # Call this function to move the row above
     # the cleared row down by one
