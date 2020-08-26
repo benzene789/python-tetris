@@ -44,7 +44,7 @@ class TetrisBlock:
         self.stored_board = board
 
     def move_left(self):
-        if self.valid_move("left"):
+        if self.valid_move("left") and self.check_collision(-1, 0):
             # erase the shape from the board
             self.remove_shape()
             # move left
@@ -52,7 +52,7 @@ class TetrisBlock:
             block.add_shape()
 
     def move_right(self):
-        if self.valid_move("right"):
+        if self.valid_move("right") and self.check_collision(1, 0):
             # erase shape from board
             self.remove_shape()
             # move right
@@ -155,6 +155,8 @@ class TetrisBoard:
     def __init__(self):
         self.board = self.create_board()
         self.score = 0
+        self.level = 1
+        self.lines_cleared = 0
 
     # create the board
     def create_board(self):
@@ -166,6 +168,22 @@ class TetrisBoard:
             board.append(row)
         return board
 
+    # see if you should advance to the next level
+    def count_cleared_lines(self):
+        while self.lines_cleared >= 5 * self.level:
+            self.lines_cleared -= 5 * self.level
+            self.level += 1
+
+    def increase_score(self, cleared_lines):
+        if cleared_lines == 1:
+            self.score += 40 * self.level
+        elif cleared_lines == 2:
+            self.score += 100 * self.level
+        elif cleared_lines == 3:
+            self.score += 300 * self.level
+        elif cleared_lines == 4:
+            self.score += 1200 * self.level
+
     # check if a row has been cleared
     def check_full_row(self):
         # counts number of squares in each row
@@ -173,7 +191,7 @@ class TetrisBoard:
         # the row is full
         count = 0
 
-        for y in range(ROWS):
+        for y in range(ROWS-1, 0, -1):
             for x in range(COLUMNS):
                 if self.board[y][x] != ".":
                     count += 1
@@ -181,8 +199,14 @@ class TetrisBoard:
                 for col in range(COLUMNS):
                     self.board[y][col] = "."
                 self.move_blocks_down(y)
-                self.score += 10
+
+                # increment amount of lines cleared
+                self.lines_cleared += 1
+
+                self.increase_score(self.lines_cleared)
+                
             count = 0
+        self.count_cleared_lines()
 
     # Call this function to move the row above
     # the cleared row down by one
@@ -274,6 +298,8 @@ if __name__ == "__main__":
             fall_time %= threshold
             # draw the board
         game_board.draw_board(display)
+        print(game_board.level)
+        print(game_board.score)
 
         pygame.display.update()
     print(game_board.score)
