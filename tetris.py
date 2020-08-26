@@ -58,9 +58,6 @@ class TetrisBlock:
             # move right
             self.x += 1
             block.add_shape()
-        else:
-
-            self.x = self.x
 
     # Huge shout out to WilliamWFLee!, helped me on this function
     def valid_move(self, direction):
@@ -69,19 +66,23 @@ class TetrisBlock:
         # check if block is within the boundary of the board
         # when moving both left and right
         if direction == "right":
+            # check withink bounds of the board (right side)
             if self.x + self.width < COLUMNS:
                 for y in range(self.height):
-                  if(self.block[y][self.width-1] == "B") and self.stored_board[self.y + y][self.x + self.width] != ".":
-                        valid_move = False
+                    if self.block[y][self.width-1] == "B":
+                        if self.stored_board[self.y + y][self.x + self.width] != ".":
+                            valid_move = False
             else:
-                  valid_move = False
-                  
+                valid_move = False
 
+        # check left
         else:
+            # check withink bounds of the board (left side)
             if self.x > 0:
                 for y in range(self.height):
-                  if(self.block[y][self.width-1] == "B") and self.stored_board[self.y + y][self.x - self.width] != ".":
-                        valid_move = False
+                    if(self.block[y][self.width-1] == "B"):
+                        if self.stored_board[self.y + y][self.x - self.width] != ".":
+                            valid_move = False
             else:
                 valid_move = False
 
@@ -92,16 +93,18 @@ class TetrisBlock:
     def add_shape(self):
         for row in range(self.height):
             for col in range(self.width):
-                if self.block[row][col] == "B" and (self.y + row < ROWS and self.x + col < COLUMNS):
-                    # add colour as integer
-                    self.stored_board[self.y + row][self.x + col] = self.colour
+                if self.block[row][col] == "B":
+                    if (self.y + row < ROWS and self.x + col < COLUMNS):
+                        # add colour as integer
+                        self.stored_board[self.y+row][self.x+col] = self.colour
 
     # remove the previous location of the shape
     def remove_shape(self):
         for row in range(self.height):
             for col in range(self.width):
-                if self.block[row][col] == "B" and (self.y + row < ROWS and self.x + col < COLUMNS):
-                    self.stored_board[self.y + row][self.x + col] = "."
+                if self.block[row][col] == "B":
+                    if (self.y + row < ROWS and self.x + col < COLUMNS):
+                        self.stored_board[self.y + row][self.x + col] = "."
 
     # rotate the shape
     def rotate_shape(self):
@@ -134,13 +137,14 @@ class TetrisBlock:
 
         can_move = True
         self.remove_shape()  # Remove the shape from the board
-        for y, row in enumerate(self.block):  # self.block is your representaton of the block
+        for y, row in enumerate(self.block):
             for x, square in enumerate(row):
-                if square == "B":  # If the square if a block
-                    # If we assume (self.x, self.y) represents the top-left of the tetromino on the grid
-                    if self.stored_board[self.y + y + dy][self.x + x + dx] != ".":
+                if square == "B":  # If the square is a part of the block
+                    # If one of the blocks can't move in
+                    # that direction, then the whole shape cannot move
+                    if self.stored_board[self.y+y+dy][self.x+x+dx] != ".":
                         can_move = False
-                        break # Break here. One of the blocks can't move in that direction, then the whole shape cannot move
+                        break
 
         self.add_shape()  # Place the shape back on the grid
         return can_move
@@ -164,8 +168,11 @@ class TetrisBoard:
 
     # check if a row has been cleared
     def check_full_row(self):
+        # counts number of squares in each row
+        # if the counter is equal to the amount of columns then
+        # the row is full
         count = 0
-        filled = True
+
         for y in range(ROWS):
             for x in range(COLUMNS):
                 if self.board[y][x] != ".":
@@ -173,14 +180,14 @@ class TetrisBoard:
             if count == COLUMNS:
                 for col in range(COLUMNS):
                     self.board[y][col] = "."
-                self.move_blocks_down()
+                self.move_blocks_down(y)
                 self.score += 10
             count = 0
 
     # Call this function to move the row above
     # the cleared row down by one
-    def move_blocks_down(self):
-        for y in range(ROWS-1, 0, -1):
+    def move_blocks_down(self, row):
+        for y in range(row, 0, -1):
             for x in range(COLUMNS):
                 self.board[y][x] = self.board[y-1][x]
 
@@ -188,7 +195,6 @@ class TetrisBoard:
         if piece.y == 0:
             return True
         return False
-
 
     def draw_board(self, display):
         left = 0
@@ -251,7 +257,7 @@ if __name__ == "__main__":
                 game_board.check_full_row()
 
             # check for collision with next row
-            elif block.check_collision(0,1):
+            elif block.check_collision(0, 1):
                 # remove shape
                 block.remove_shape()
                 block.y += 1
@@ -270,3 +276,4 @@ if __name__ == "__main__":
         game_board.draw_board(display)
 
         pygame.display.update()
+    print(game_board.score)
