@@ -1,11 +1,11 @@
-import pygame
 import random
+import pygame
 
 COLUMNS = 10
 ROWS = 24
 
-WIDTH = 1550
-HEIGHT = 1550
+WIDTH = 500
+HEIGHT = 750
 
 OBlock = [["B", "B"],
           ["B", "B"]]
@@ -40,7 +40,6 @@ class TetrisBlock:
         self.height = len(self.block)
         self.width = len(self.block[0])
         self.colour = random.randint(1, 7)
-
         self.stored_board = board
 
     def move_left(self):
@@ -156,7 +155,9 @@ class TetrisBoard:
         self.board = self.create_board()
         self.score = 0
         self.level = 1
-        self.lines_cleared = 0
+        self.current_lines_cleared = 0
+        self.total_lines_cleared = 0
+
 
     # create the board
     def create_board(self):
@@ -170,8 +171,8 @@ class TetrisBoard:
 
     # see if you should advance to the next level
     def count_cleared_lines(self):
-        while self.lines_cleared >= 5 * self.level:
-            self.lines_cleared -= 5 * self.level
+        while self.current_lines_cleared >= 5 * self.level:
+            self.current_lines_cleared -= 5 * self.level
             self.level += 1
 
     def increase_score(self, cleared_lines):
@@ -204,7 +205,8 @@ class TetrisBoard:
                 self.move_blocks_down(y)
 
                 # increment amount of lines cleared
-                self.lines_cleared += 1
+                self.current_lines_cleared += 1
+                self.total_lines_cleared += 1
                 lines_cleared_per_drop += 1
 
             count = 0
@@ -225,7 +227,8 @@ class TetrisBoard:
         return False
 
     def draw_board(self, display):
-        left = 0
+        pygame.font.init()
+        left = 100
         top = 0
         for y in range(len(self.board)):
             for x in range(len(self.board[0])):
@@ -243,6 +246,15 @@ class TetrisBoard:
                     pygame.draw.rect(display, pygame.Color(
                         colours[colour]), (draw_x, draw_y, 25, 25))
 
+        FONT = pygame.font.SysFont("Arial", 20)
+
+        text_surface = FONT.render("Level: "+f"{self.level}", True, pygame.Color("green"))
+
+        display.blit(text_surface, (400, 200))
+
+        text_surface = FONT.render("Lines Cleared: "+f"{self.total_lines_cleared}", True, pygame.Color("red"))
+
+        display.blit(text_surface, (375, 300))
 
 # Main game loop
 if __name__ == "__main__":
@@ -300,10 +312,11 @@ if __name__ == "__main__":
                 game_board.check_full_row()
 
             fall_time %= threshold
-            # draw the board
+        # draw the board
         game_board.draw_board(display)
-        print(game_board.level)
-        print(game_board.score)
+        print("level ",game_board.level)
+        print("score ",game_board.score)
+        print("lines cleared ",game_board.total_lines_cleared)
 
         pygame.display.update()
     print(game_board.score)
