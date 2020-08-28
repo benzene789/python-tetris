@@ -122,13 +122,14 @@ class TetrisBlock:
             rotation.append(new_row)
 
         board_right = self.x + len(rotation[0])
-
+        
         if board_right <= len(self.stored_board[0]):
             self.block = rotation
             self.width = len(self.block[0])
             self.height = len(self.block)
 
-        block.add_shape()
+        self.add_shape()
+
 
     # check if there will be a collision between current block and row below
     # Another huge shout out for WilliamWFLee, helped me on this function
@@ -227,6 +228,7 @@ class TetrisBoard:
         return False
 
     def draw_board(self, display):
+        display.fill(pygame.Color('white'))
         pygame.font.init()
         left = 100
         top = 0
@@ -248,13 +250,17 @@ class TetrisBoard:
 
         FONT = pygame.font.SysFont("Arial", 20)
 
-        text_surface = FONT.render("Level: "+f"{self.level}", True, pygame.Color("green"))
+        level_text = FONT.render("Level: "+f"{self.level}", True, pygame.Color("green"))
 
-        display.blit(text_surface, (400, 200))
+        display.blit(level_text, (400, 200))
 
-        text_surface = FONT.render("Lines Cleared: "+f"{self.total_lines_cleared}", True, pygame.Color("red"))
+        lines_cleared_text = FONT.render("Lines Cleared: "+f"{self.total_lines_cleared}", True, pygame.Color("red"))
 
-        display.blit(text_surface, (375, 300))
+        display.blit(lines_cleared_text, (375, 300))
+
+        score_text = FONT.render("Score: "+f"{self.score}", True, pygame.Color("black"))
+
+        display.blit(score_text, (400, 250))
 
 # Main game loop
 if __name__ == "__main__":
@@ -314,9 +320,6 @@ if __name__ == "__main__":
             fall_time %= threshold
         # draw the board
         game_board.draw_board(display)
-        print("level ",game_board.level)
-        print("score ",game_board.score)
-        print("lines cleared ",game_board.total_lines_cleared)
 
         pygame.display.update()
     print(game_board.score)
