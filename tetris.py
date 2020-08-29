@@ -228,7 +228,12 @@ class TetrisBoard:
         return False
 
     def draw_board(self, display):
-        display.fill(pygame.Color('white'))
+        display.fill(pygame.Color("white"))
+
+        for i in range(len(self.board[0])):
+            x = draw_x = 100 + (i * 25)
+            pygame.draw.rect(display, pygame.Color('red'), (100, 0, 25, 25))
+
         pygame.font.init()
         left = 100
         top = 0
@@ -241,12 +246,15 @@ class TetrisBoard:
                 if colour == ".":
                     # colour in black
                     pygame.draw.rect(display, pygame.Color(
-                        "#000000"), (draw_x, draw_y, 25, 25))
+                        "black"), (draw_x, draw_y, 25, 25))
 
                 else:
                     # colour in specified colour
                     pygame.draw.rect(display, pygame.Color(
                         colours[colour]), (draw_x, draw_y, 25, 25))
+                
+                pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 25, 0))
+                pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 0, 25))
 
         FONT = pygame.font.SysFont("Arial", 20)
 
