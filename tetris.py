@@ -159,7 +159,6 @@ class TetrisBoard:
         self.current_lines_cleared = 0
         self.total_lines_cleared = 0
 
-
     # create the board
     def create_board(self):
         board = []
@@ -230,13 +229,9 @@ class TetrisBoard:
     def draw_board(self, display):
         display.fill(pygame.Color("white"))
 
-        for i in range(len(self.board[0])):
-            x = draw_x = 100 + (i * 25)
-            pygame.draw.rect(display, pygame.Color('red'), (100, 0, 25, 25))
-
         pygame.font.init()
         left = 100
-        top = 0
+        top = 5
         for y in range(len(self.board)):
             for x in range(len(self.board[0])):
                 draw_x = left + (x * 25)
@@ -255,6 +250,13 @@ class TetrisBoard:
                 
                 pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 25, 0))
                 pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 0, 25))
+        
+        for i in range(len(self.board[0])):
+            x = 100 + (i * 25)
+            pygame.draw.rect(display, pygame.Color('black'), (x, 5, 25, 25))
+            pygame.draw.rect(display, pygame.Color('grey'), (x, 5, 25, 0))
+            pygame.draw.rect(display, pygame.Color('grey'), (x, draw_y, 0, 25))
+        
 
         FONT = pygame.font.SysFont("Arial", 20)
 
