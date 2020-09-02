@@ -48,7 +48,6 @@ class TetrisBlock:
             self.remove_shape()
             # move left
             self.x -= 1
-            block.add_shape()
 
     def move_right(self):
         if self.valid_move("right") and self.check_collision(1, 0):
@@ -56,7 +55,6 @@ class TetrisBlock:
             self.remove_shape()
             # move right
             self.x += 1
-            block.add_shape()
 
     # Huge shout out to WilliamWFLee!, helped me on this function
     def valid_move(self, direction):
@@ -127,9 +125,6 @@ class TetrisBlock:
             self.block = rotation
             self.width = len(self.block[0])
             self.height = len(self.block)
-
-        self.add_shape()
-
 
     # check if there will be a collision between current block and row below
     # Another huge shout out for WilliamWFLee, helped me on this function
@@ -255,7 +250,7 @@ class TetrisBoard:
             x = 100 + (i * 25)
             pygame.draw.rect(display, pygame.Color('black'), (x, 5, 25, 25))
             pygame.draw.rect(display, pygame.Color('grey'), (x, 5, 25, 0))
-            pygame.draw.rect(display, pygame.Color('grey'), (x, draw_y, 0, 25))
+            pygame.draw.rect(display, pygame.Color('grey'), (x, 5, 0, 25))
         
 
         FONT = pygame.font.SysFont("Arial", 20)
@@ -272,64 +267,68 @@ class TetrisBoard:
 
         display.blit(score_text, (400, 250))
 
+
+class TetrisGame:
+    
+    def __init__(self):
+        self.display = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.game_board = TetrisBoard()
+        self.block = TetrisBlock(self.game_board.board)
+        self.clock = pygame.time.Clock()
+        self.fall_time = 0
+        self.threshold = 500
+        self.game_over = False
+
+    def run_game(self):
+        self.game_board.board[self.block.y][self.block.x] = self.block.colour
+
+        while not self.game_over:
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    raise SystemExit
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RIGHT:
+                        self.block.move_right()
+                    elif event.key == pygame.K_LEFT:
+                        print("Left key pressed")
+                        self.block.move_left()
+                    elif event.key == pygame.K_SPACE:
+                        self.block.rotate_shape()
+                    # add the shape back
+                    self.block.add_shape()
+
+            self.fall_time += self.clock.tick()
+
+            if self.fall_time > self.threshold:
+                # check if the current piece is at the bottom
+                if self.block.y == ROWS - self.block.height:
+                    self.block = TetrisBlock(self.game_board.board)
+                    self.game_board.check_full_row()
+
+                # check for collision with next row
+                elif self.block.check_collision(0, 1):
+                    # remove shape
+                    self.block.remove_shape()
+                    self.block.y += 1
+                    # redraw the shape
+                    self.block.add_shape()
+
+                else:
+                    if self.game_board.check_game_over(self.block):
+                        self.game_over = True
+
+                    self.block = TetrisBlock(self.game_board.board)
+                    self.game_board.check_full_row()
+
+                self.fall_time %= self.threshold
+            # draw the board
+            self.game_board.draw_board(self.display)
+
+            pygame.display.update()
+
+
 # Main game loop
 if __name__ == "__main__":
-    # set display
-    display = pygame.display.set_mode((WIDTH, HEIGHT))
-    display.fill(pygame.Color("white"))
-    game_board = TetrisBoard()
-    block = TetrisBlock(game_board.board)
-
-    game_board.board[block.y][block.x] = block.colour
-
-    clock = pygame.time.Clock()
-
-    fall_time = 0
-    threshold = 500
-
-    game_over = False
-    while not game_over:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                raise SystemExit
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    print("Right key pressed")
-                    block.move_right()
-                elif event.key == pygame.K_LEFT:
-                    print("Left key pressed")
-                    block.move_left()
-                elif event.key == pygame.K_SPACE:
-                    block.rotate_shape()
-
-        # keep track of how much time has elapsed
-        fall_time += clock.tick()
-
-        if fall_time > threshold:
-            # check if the current piece is at the bottom
-            if block.y == ROWS - block.height:
-                block = TetrisBlock(game_board.board)
-                game_board.check_full_row()
-
-            # check for collision with next row
-            elif block.check_collision(0, 1):
-                # remove shape
-                block.remove_shape()
-                block.y += 1
-                # redraw the shape
-                block.add_shape()
-
-            else:
-                if game_board.check_game_over(block):
-                    game_over = True
-
-                block = TetrisBlock(game_board.board)
-                game_board.check_full_row()
-
-            fall_time %= threshold
-        # draw the board
-        game_board.draw_board(display)
-
-        pygame.display.update()
-    print(game_board.score)
+    tetris_game = TetrisGame()
+    tetris_game.run_game()
