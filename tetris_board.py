@@ -79,7 +79,7 @@ class TetrisBoard:
             return True
         return False
 
-    def draw_board(self, display):
+    def draw_board(self, display, high_score):
         display.fill(pygame.Color("white"))
 
         pygame.font.init()
@@ -104,6 +104,7 @@ class TetrisBoard:
                 pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 25, 0))
                 pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 0, 25))
         
+        # stop the top from displaying a random sub block
         for i in range(len(self.board[0])):
             x = 100 + (i * 25)
             pygame.draw.rect(display, pygame.Color('black'), (x, 5, 25, 25))
@@ -124,3 +125,8 @@ class TetrisBoard:
         score_text = FONT.render("Score: "+f"{self.score}", True, pygame.Color("black"))
 
         display.blit(score_text, (400, 250))
+
+        hs_text = FONT.render("High Score: "+f"{high_score}", True, pygame.Color("purple"))
+
+        display.blit(hs_text, (140, 650))
+        

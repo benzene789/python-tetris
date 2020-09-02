@@ -8,6 +8,7 @@ from tetris_info import TetrisInfo
 class TetrisGame:
     
     def __init__(self):
+        self.high_score = self.current_high_score()
         self.info = TetrisInfo()
         self.display = pygame.display.set_mode((self.info.width, self.info.height))
         self.game_board = TetrisBoard()
@@ -17,6 +18,24 @@ class TetrisGame:
         self.threshold = 500
         self.game_over = False
 
+    # write the high score to the file
+    def write_high_score(self):
+        with open('tetris_high_score.txt', 'w') as file:
+            score = file.write(str(self.game_board.score))
+
+    # get the current high score from the file
+    def current_high_score(self):
+        pygame.font.init()
+        # try open it
+        try:
+            with open('tetris_high_score.txt') as file:
+                return int(file.read())
+        except:
+            print('Problem reading file...')
+            # If the file doesn't exist or contains nothing then
+            # highscore = 0
+            return 0
+
     # run the game
     def run_game(self):
         self.game_board.board[self.block.y][self.block.x] = self.block.colour
@@ -25,7 +44,7 @@ class TetrisGame:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    raise SystemExit
+                    quit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RIGHT:
                         self.block.move_right()
@@ -62,6 +81,10 @@ class TetrisGame:
 
                 self.fall_time %= self.threshold
             # draw the board
-            self.game_board.draw_board(self.display)
+            self.game_board.draw_board(self.display, self.high_score)
 
             pygame.display.update()
+
+        # save score to a file
+        if self.game_board.score > self.high_score:
+            self.write_high_score()
