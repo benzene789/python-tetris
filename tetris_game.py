@@ -49,7 +49,6 @@ class TetrisGame:
                     if event.key == pygame.K_RIGHT:
                         self.block.move_right()
                     elif event.key == pygame.K_LEFT:
-                        print("Left key pressed")
                         self.block.move_left()
                     elif event.key == pygame.K_SPACE:
                         self.block.rotate_shape()
