@@ -6,7 +6,7 @@ class TetrisBlock:
         self.info = TetrisInfo()
         self.x = 5
         self.y = 0
-        self.block = random.choice(self.info.all_shapes)
+        self.block = random.choice(self.info.i_block)
         self.height = len(self.block)
         self.width = len(self.block[0])
         self.colour = random.randint(1, 7)
@@ -97,10 +97,11 @@ class TetrisBlock:
             self.height = len(self.block)
 
     def check_valid_rotation(self, rotation):
+
         board_right = self.x + len(rotation[0])
         board_bottom = self.y + len(rotation)
 
-        if board_right > len(self.stored_board[0]):
+        if board_right >= len(self.stored_board[0]):
             self.wall_kick()
 
         elif board_bottom >= len(self.stored_board):
@@ -110,7 +111,6 @@ class TetrisBlock:
         # Or the wall
         if not(self.check_collision(1,0) and self.check_collision(-1,0)):
             return False
-
         return True
 
     def wall_kick(self):
@@ -123,20 +123,21 @@ class TetrisBlock:
     # check if there will be a collision between current block and row below
     # Another huge shout out for WilliamWFLee, helped me on this function
     def check_collision(self, dx: int, dy: int):
+        
         can_move = True
         self.remove_shape()  # Remove the shape from the board
         for y, row in enumerate(self.block):
             for x, square in enumerate(row):
                 if square == "B":  # If the square is a part of the block
-
                     # If the end of the shape is at the end of the board then
-                    # it will check out of range, so set dx to 0
+                    # it will check out of range, so break
                     if self.x+x+dx >= self.info.columns:
-                        # wall kick
-                        #self.wall_kick()
-                        dx = 0 
                         break
-                        
+                    # dont rotate if it will go past the bottom
+                    elif self.y+y+dy >= self.info.rows:
+                        can_move = False
+                        break
+
                     # If one of the blocks can't move in
                     # that direction, then the whole shape cannot move
                     if self.stored_board[self.y+y+dy][self.x+x+dx] != ".":
@@ -145,3 +146,17 @@ class TetrisBlock:
 
         self.add_shape()  # Place the shape back on the grid
         return can_move
+
+    # Do a hard drop
+    def hard_drop(self):
+        self.remove_shape()
+        lines_moved = 0
+        can_move = True
+        # Check how far u can move
+        while can_move:
+            if not self.check_collision(0, lines_moved):
+                self.remove_shape()
+                break
+            lines_moved += 1
+
+        return (self.y + lines_moved-1)

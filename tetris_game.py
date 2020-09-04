@@ -52,6 +52,8 @@ class TetrisGame:
                         self.block.move_left()
                     elif event.key == pygame.K_SPACE:
                         self.block.rotate_shape()
+                    elif event.key == pygame.K_UP:
+                        self.block.y = self.block.hard_drop()
                     # add the shape back
                     self.block.add_shape()
             # increase fall time
