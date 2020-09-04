@@ -89,27 +89,35 @@ class TetrisBlock:
             # add each new row to the new rotation
             rotation.append(new_row)
 
-        board_right = self.x + len(rotation[0])
-
-        # Check if the rotation would cause a collision with near by blocks
-        # Or the wall
-        if self.check_collision(1,0) and self.check_collision(-1,0):
+        if self.check_valid_rotation(rotation):
             self.remove_shape()
 
             self.block = rotation
             self.width = len(self.block[0])
             self.height = len(self.block)
 
+
+    def check_valid_rotation(self, rotation):
+        board_right = self.x + len(rotation[0])
+
+        if board_right > len(self.stored_board[0]):
+            self.wall_kick()
+
+        # Check if the rotation would cause a collision with near by blocks
+        # Or the wall
+        if not(self.check_collision(1,0) and self.check_collision(-1,0)):
+            return False
+
+        return True
         
 
     def wall_kick(self):
+        print(self.info.columns - self.height)
         # No need to change the x coord for the O block
         if self.block == self.info.o_block:
             self.x = self.x
-        elif self.block == self.info.i_block:
-            self.x -= self.height
         else:
-            self.x -= self.height - 2
+            self.x = self.info.columns - self.height
 
     # check if there will be a collision between current block and row below
     # Another huge shout out for WilliamWFLee, helped me on this function
@@ -125,8 +133,9 @@ class TetrisBlock:
                     # it will check out of range, so set dx to 0
                     if self.x+x+dx >= self.info.columns:
                         # wall kick
-                        self.wall_kick()
+                        #self.wall_kick()
                         dx = 0 
+                        break
                         
                     # If one of the blocks can't move in
                     # that direction, then the whole shape cannot move
