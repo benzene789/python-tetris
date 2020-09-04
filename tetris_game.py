@@ -15,7 +15,7 @@ class TetrisGame:
         self.block = TetrisBlock(self.game_board.board)
         self.clock = pygame.time.Clock()
         self.fall_time = 0
-        self.threshold = 500
+        self.threshold = 1000 * (0.8 - (self.game_board.level-1)*0.007)**(self.game_board.level-1)
         self.game_over = False
 
     # write the high score to the file
