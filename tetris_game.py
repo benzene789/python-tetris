@@ -17,6 +17,7 @@ class TetrisGame:
         self.fall_time = 0
         self.threshold = 1000 * (0.8 - (self.game_board.level-1)*0.007)**(self.game_board.level-1)
         self.game_over = False
+        self.held_shape = ""
 
     # write the high score to the file
     def write_high_score(self):
@@ -36,11 +37,23 @@ class TetrisGame:
             # highscore = 0
             return 0
 
+    # create new block function
+    def new_block(self):
+        return TetrisBlock(self.game_board.board)
+
+    # create hold block function
+    def hold_shape(self, shape):
+        self.block.remove_shape()
+        self.held_shape = shape
+
     # run the game
     def run_game(self):
         self.game_board.board[self.block.y][self.block.x] = self.block.colour
 
         while not self.game_over:
+            hold = False
+            # Show the next block
+            next_block = self.new_block()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -52,10 +65,24 @@ class TetrisGame:
                         self.block.move_left()
                     elif event.key == pygame.K_SPACE:
                         self.block.rotate_shape()
-                    elif event.key == pygame.K_UP:
+                    elif event.key == pygame.K_DOWN:
                         self.block.y = self.block.hard_drop()
+                    elif event.key == pygame.K_UP:
+                        # hold the shape
+                        hold = True
+                        self.hold_shape(self.block)
+                        break
+                    # elif event.key == pygame.K_A:
+                    #     # get held block
+                    #     self.block = self.held_shape
+                    #     self.block.y = 0
+
                     # add the shape back
                     self.block.add_shape()
+
+            if hold:
+                continue
+
             # increase fall time
             self.fall_time += self.clock.tick()
 
@@ -77,7 +104,7 @@ class TetrisGame:
                     if self.game_board.check_game_over(self.block):
                         self.game_over = True
 
-                    self.block = TetrisBlock(self.game_board.board)
+                    self.block = next_block
                     self.game_board.check_full_row()
 
                 self.fall_time %= self.threshold

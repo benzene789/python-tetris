@@ -6,7 +6,7 @@ class TetrisBlock:
         self.info = TetrisInfo()
         self.x = 5
         self.y = 0
-        self.block = random.choice(self.info.i_block)
+        self.block = random.choice(self.info.all_shapes)
         self.height = len(self.block)
         self.width = len(self.block[0])
         self.colour = random.randint(1, 7)
@@ -152,11 +152,12 @@ class TetrisBlock:
         self.remove_shape()
         lines_moved = 0
         can_move = True
-        # Check how far u can move
+        # Check how far you can move
         while can_move:
+            # if a collision is detected
             if not self.check_collision(0, lines_moved):
                 self.remove_shape()
                 break
             lines_moved += 1
-
+        # -1 to keep with list indices
         return (self.y + lines_moved-1)
