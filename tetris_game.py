@@ -17,7 +17,7 @@ class TetrisGame:
         self.fall_time = 0
         self.threshold = 1000 * (0.8 - (self.game_board.level-1)*0.007)**(self.game_board.level-1)
         self.game_over = False
-        self.held_shape = ""
+        self.held_shape = None
 
     # write the high score to the file
     def write_high_score(self):
@@ -48,7 +48,6 @@ class TetrisGame:
 
     # run the game
     def run_game(self):
-        self.game_board.board[self.block.y][self.block.x] = self.block.colour
 
         while not self.game_over:
             hold = False
@@ -57,7 +56,7 @@ class TetrisGame:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quit()
+                    self.game_over = True
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RIGHT:
                         self.block.move_right()
@@ -68,9 +67,14 @@ class TetrisGame:
                     elif event.key == pygame.K_DOWN:
                         self.block.y = self.block.hard_drop()
                     elif event.key == pygame.K_UP:
-                        # hold the shape
-                        hold = True
-                        self.hold_shape(self.block)
+                        # check if no shapes are currently held
+                        if self.held_shape is None:
+                            # hold the shape
+                            hold = True
+                            self.hold_shape(self.block)
+                        else:
+                            self.block.remove_shape()
+                            self.block = self.held_shape
                         break
                     # elif event.key == pygame.K_A:
                     #     # get held block
@@ -80,7 +84,14 @@ class TetrisGame:
                     # add the shape back
                     self.block.add_shape()
 
+            # terminate the program
+            if self.game_over:
+                break
+
+            # hold the block
             if hold:
+                self.block = next_block
+                self.block.y = 0
                 continue
 
             # increase fall time
