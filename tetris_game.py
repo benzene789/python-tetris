@@ -46,8 +46,6 @@ class TetrisGame:
         self.block.remove_shape()
         self.held_shape = shape
     
-    
-
     # run the game
     def run_game(self):
         next_block = self.new_block()
@@ -76,6 +74,7 @@ class TetrisGame:
                         else:
                             self.block.remove_shape()
                             self.block = self.held_shape
+                            self.block.y = 0
                             # set back to none
                             self.held_shape = None
                         break
@@ -117,18 +116,18 @@ class TetrisGame:
                     next_block = self.new_block()
 
                 self.fall_time %= self.threshold
-
+            
             # hold the block
             if hold:
                 self.block = next_block
                 self.block.y = 0
+                self.game_board.draw_shape_info(self.block, self.display, 400, 5)
                 continue
 
             # draw the board
             self.game_board.draw_board(self.display, self.high_score)
             # draw the next block
-            self.game_board.draw_next_shape(next_block, self.display)
-            
+            self.game_board.draw_shape_info(next_block, self.display, 1, 5)
 
             pygame.display.update()
 

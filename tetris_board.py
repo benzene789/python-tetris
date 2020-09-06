@@ -3,6 +3,7 @@ from tetris_info import TetrisInfo
 import pygame
 
 class TetrisBoard:
+    pygame.font.init()
 
     def __init__(self):
         self.info = TetrisInfo()
@@ -79,21 +80,26 @@ class TetrisBoard:
             return True
         return False
 
-    def draw_next_shape(self, next_shape, display):
-        print(next_shape.block)
+    def draw_shape_info(self, next_shape, display, x, y):
+
+        FONT = pygame.font.SysFont("Arial", 20)
+        next_shape_text = FONT.render("Next shape: " , True, pygame.Color("red"))
+        display.blit(next_shape_text, (x, y))
+        
         for row in range(next_shape.height):
             for col in range(next_shape.width):
                 if next_shape.block[row][col] == "B":
-                    draw_x = 10 + (col * 25)
-                    draw_y = 5 + (row * 25)
+                    draw_x = x + (col * 25)
+                    draw_y = (y + 25) + (row * 25)
                     # draw the block
                     pygame.draw.rect(display, pygame.Color(
                         self.info.colours[next_shape.colour]), (draw_x, draw_y, 25, 25))
+                    pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 25, 0))
+                    pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 0, 25))
 
     def draw_board(self, display, high_score):
         display.fill(pygame.Color("white"))
 
-        pygame.font.init()
         left = 100
         top = 5
         for y in range(len(self.board)):
