@@ -45,15 +45,16 @@ class TetrisGame:
     def hold_shape(self, shape):
         self.block.remove_shape()
         self.held_shape = shape
+    
+    
 
     # run the game
     def run_game(self):
+        next_block = self.new_block()
 
         while not self.game_over:
             hold = False
-            # Show the next block
-            next_block = self.new_block()
-
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game_over = True
@@ -75,11 +76,9 @@ class TetrisGame:
                         else:
                             self.block.remove_shape()
                             self.block = self.held_shape
+                            # set back to none
+                            self.held_shape = None
                         break
-                    # elif event.key == pygame.K_A:
-                    #     # get held block
-                    #     self.block = self.held_shape
-                    #     self.block.y = 0
 
                     # add the shape back
                     self.block.add_shape()
@@ -88,23 +87,21 @@ class TetrisGame:
             if self.game_over:
                 break
 
-            # hold the block
-            if hold:
-                self.block = next_block
-                self.block.y = 0
-                continue
-
             # increase fall time
             self.fall_time += self.clock.tick()
 
             if self.fall_time > self.threshold:
+                
                 # check if the current piece is at the bottom
-                if self.block.y == self.info.rows - self.block.height:
-                    self.block = TetrisBlock(self.game_board.board)
+                if self.block.y == self.info.rows - self.block.height:                    
+                    self.block = next_block
                     self.game_board.check_full_row()
+                    # Set up the next block
+                    next_block = self.new_block()
 
                 # check for collision with next row
                 elif self.block.check_collision(0, 1):
+                    
                     # remove shape
                     self.block.remove_shape()
                     self.block.y += 1
@@ -117,10 +114,21 @@ class TetrisGame:
 
                     self.block = next_block
                     self.game_board.check_full_row()
+                    next_block = self.new_block()
 
                 self.fall_time %= self.threshold
+
+            # hold the block
+            if hold:
+                self.block = next_block
+                self.block.y = 0
+                continue
+
             # draw the board
             self.game_board.draw_board(self.display, self.high_score)
+            # draw the next block
+            self.game_board.draw_next_shape(next_block, self.display)
+            
 
             pygame.display.update()
 

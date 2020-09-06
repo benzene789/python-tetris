@@ -79,6 +79,17 @@ class TetrisBoard:
             return True
         return False
 
+    def draw_next_shape(self, next_shape, display):
+        print(next_shape.block)
+        for row in range(next_shape.height):
+            for col in range(next_shape.width):
+                if next_shape.block[row][col] == "B":
+                    draw_x = 10 + (col * 25)
+                    draw_y = 5 + (row * 25)
+                    # draw the block
+                    pygame.draw.rect(display, pygame.Color(
+                        self.info.colours[next_shape.colour]), (draw_x, draw_y, 25, 25))
+
     def draw_board(self, display, high_score):
         display.fill(pygame.Color("white"))
 
