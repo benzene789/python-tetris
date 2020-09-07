@@ -20,13 +20,25 @@ py -3 -m pip install -r requirements.txt
 ```
 ## Running the game
 
-Execute the file tetris.py
+Execute the file main.py
 
 ```
-python3 tetris.py
+python3 main.py
 ```
 
 Windows:
 ```bash
 py -3 main.py
 ```
+
+## Game controls
+
+Use ```left and right arrow keys``` to move the shape
+
+Use ```Space``` to rotate the shape
+
+Use ```Down arrow key``` to do a hard drop
+
+Use ```Up arrow key``` to hold the current shape
+
+Use ```S key``` to do a soft drop
