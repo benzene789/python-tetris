@@ -121,11 +121,14 @@ class TetrisGame:
             if hold:
                 self.block = next_block
                 self.block.y = 0
-                self.game_board.draw_shape_info(self.block, self.display, 400, 5)
+                # get the next block
+                next_block = self.new_block()
                 continue
-
+                
             # draw the board
             self.game_board.draw_board(self.display, self.high_score)
+            # draw held block
+            self.game_board.draw_shape_info(self.held_shape, self.display, 400, 5)
             # draw the next block
             self.game_board.draw_shape_info(next_block, self.display, 1, 5)
 

@@ -78,24 +78,25 @@ class TetrisBoard:
     def check_game_over(self, piece):
         if piece.y == 0:
             return True
-        return False
+        return False        
 
     def draw_shape_info(self, next_shape, display, x, y):
+        if next_shape is not None:
 
-        FONT = pygame.font.SysFont("Arial", 20)
-        next_shape_text = FONT.render("Next shape: " , True, pygame.Color("red"))
-        display.blit(next_shape_text, (x, y))
-        
-        for row in range(next_shape.height):
-            for col in range(next_shape.width):
-                if next_shape.block[row][col] == "B":
-                    draw_x = x + (col * 25)
-                    draw_y = (y + 25) + (row * 25)
-                    # draw the block
-                    pygame.draw.rect(display, pygame.Color(
-                        self.info.colours[next_shape.colour]), (draw_x, draw_y, 25, 25))
-                    pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 25, 0))
-                    pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 0, 25))
+            FONT = pygame.font.SysFont("Arial", 20)
+            next_shape_text = FONT.render("Next shape: " , True, pygame.Color("red"))
+            display.blit(next_shape_text, (x, y))
+
+            for row in range(next_shape.height):
+                for col in range(next_shape.width):
+                    if next_shape.block[row][col] == "B":
+                        draw_x = x + (col * 25)
+                        draw_y = (y + 25) + (row * 25)
+                        # draw the block
+                        pygame.draw.rect(display, pygame.Color(
+                            self.info.colours[next_shape.colour]), (draw_x, draw_y, 25, 25))
+                        pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 25, 0))
+                        pygame.draw.rect(display, pygame.Color('grey'), (draw_x, draw_y, 0, 25))
 
     def draw_board(self, display, high_score):
         display.fill(pygame.Color("white"))
