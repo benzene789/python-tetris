@@ -28,7 +28,7 @@ python3 main.py
 
 Windows:
 ```bash
-py -3 main.py
+python main.py
 ```
 
 ## Game controls
