@@ -104,17 +104,18 @@ class Game:
                     self.block = next_block
                     self.game_board.check_full_row()
                     # Set up the next block
-                    next_block = self.new_block()
-                    # end the soft drop
-                    self.threshold = self.current_threshold
+                    next_block = self.new_block()                    
 
                 # check for collision with next row
                 elif self.block.check_collision(0, 1):
+                    # end the soft drop
+                    self.threshold = self.current_threshold
                     # remove shape
                     self.block.remove_shape()
                     self.block.y += 1
                     # redraw the shape
                     self.block.add_shape()
+                    
 
                 else:
                     if self.game_board.check_game_over(self.block):
@@ -123,8 +124,7 @@ class Game:
                     self.block = next_block
                     self.game_board.check_full_row()
                     next_block = self.new_block()
-                    # end the soft drop
-                    self.threshold = self.current_threshold
+                    
 
                 self.fall_time %= self.threshold
             
