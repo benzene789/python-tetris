@@ -134,17 +134,24 @@ class Board:
 
         FONT = pygame.font.SysFont("Arial", 20)
 
-        level_text = FONT.render("Level: "+f"{self.level}", True, pygame.Color("green"))
+        level_text1 = FONT.render("Level:", True, pygame.Color("green"))
+        level_text2 = FONT.render(str(self.level), True, pygame.Color("green"))
 
-        display.blit(level_text, (400, 200))
+        display.blit(level_text1, (400, 200))
+        display.blit(level_text2, (425, 225))
 
-        lines_cleared_text = FONT.render("Lines Cleared: "+f"{self.total_lines_cleared}", True, pygame.Color("red"))
+        lines_cleared_text1 = FONT.render("Lines Cleared:", True, pygame.Color("red"))
 
-        display.blit(lines_cleared_text, (370, 300))
+        lines_cleared_text2 = FONT.render(str(self.total_lines_cleared) , True, pygame.Color("red"))
 
-        score_text = FONT.render("Score: "+f"{self.score}", True, pygame.Color("black"))
+        display.blit(lines_cleared_text1, (370, 300))
+        display.blit(lines_cleared_text2, (425, 325))
 
-        display.blit(score_text, (400, 250))
+        score_text1 = FONT.render("Score:", True, pygame.Color("black"))
+        score_text2 = FONT.render(str(self.score), True, pygame.Color("black"))
+
+        display.blit(score_text1, (400, 250))
+        display.blit(score_text2, (425, 270))
 
         hs_text = FONT.render("High Score: "+f"{high_score}", True, pygame.Color("purple"))
 

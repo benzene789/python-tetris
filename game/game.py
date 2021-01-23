@@ -8,6 +8,8 @@ from .info import Info
 class Game:
     
     def __init__(self):
+        # Title the window
+        pygame.display.set_caption("Python Tetris")
         self.high_score = self.current_high_score()
         self.info = Info()
         self.display = pygame.display.set_mode((self.info.width, self.info.height))
@@ -141,7 +143,7 @@ class Game:
             # draw held block
             self.game_board.draw_shape_info(self.held_shape, self.display, 400, 5, "Held shape: ")
             # draw the next block
-            self.game_board.draw_shape_info(next_block, self.display, 1, 5, "Next shape: ")
+            self.game_board.draw_shape_info(next_block, self.display, 0.5, 4, "Next shape")
 
             pygame.display.update()
 
